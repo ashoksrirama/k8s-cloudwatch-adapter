@@ -107,7 +107,7 @@ spec:
   selector:
     app: k8s-cloudwatch-adapter
 ---
-apiVersion: apiregistration.k8s.io/v1beta1
+apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
   name: v1beta1.external.metrics.k8s.io
@@ -160,13 +160,59 @@ subjects:
   name: horizontal-pod-autoscaler
   namespace: kube-system
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: externalmetrics.metrics.aws
 spec:
   group: metrics.aws
-  version: v1alpha1
+  versions: 
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                queries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      returnData:
+                        type: boolean
+                      metricStat:
+                        type: object
+                        properties:
+                          period:
+                            type: integer
+                          stat:
+                            type: string
+                          unit:
+                            type: string
+                          metric:
+                            type: object
+                            properties:
+                              namespace:
+                                type: string
+                              metricName:
+                                type: string
+                              dimensions:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      type: string
   names:
     kind: ExternalMetric
     plural: externalmetrics
